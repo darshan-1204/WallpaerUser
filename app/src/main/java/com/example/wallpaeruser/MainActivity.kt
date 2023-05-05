@@ -16,6 +16,8 @@ class MainActivity : AppCompatActivity() {
 
     lateinit var reference: DatabaseReference
     private val TAG = "MainActivity"
+    var modelList = ArrayList<WallpaperModel>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         var binding = ActivityMainBinding.inflate(layoutInflater)
@@ -26,7 +28,7 @@ class MainActivity : AppCompatActivity() {
         reference.root.child("Images").addValueEventListener(object : ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
 
-                var modelList = ArrayList<WallpaperModel>()
+                modelList.clear()
 
                 for (snap in snapshot.children){
                     val model = snap.getValue(WallpaperModel::class.java)

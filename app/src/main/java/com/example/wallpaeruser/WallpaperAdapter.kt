@@ -2,6 +2,8 @@ package com.example.wallpaeruser
 
 import android.annotation.SuppressLint
 import android.app.Dialog
+import android.app.WallpaperManager
+import android.graphics.Bitmap
 import android.graphics.drawable.ColorDrawable
 import android.view.LayoutInflater
 import android.view.View
@@ -9,9 +11,13 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView.Adapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
 
 class WallpaperAdapter(modelList: ArrayList<WallpaperModel>) :
     Adapter<WallpaperAdapter.ImageHolder>() {
@@ -50,6 +56,42 @@ class WallpaperAdapter(modelList: ArrayList<WallpaperModel>) :
             Glide.with(holder.itemView.context).load(modelList.get(position).img).into(imgD)
 
             dialog.show()
+
+            btn.setOnClickListener {
+                Glide.with(holder.itemView.context)
+                    .asBitmap().load(modelList.get(position).img)
+                    .listener(object : RequestListener<Bitmap> {
+                        override fun onLoadFailed(
+                            e: GlideException?,
+                            model: Any?,
+                            target: com.bumptech.glide.request.target.Target<Bitmap>?,
+                            isFirstResource: Boolean
+                        ): Boolean {
+                            return false
+                        }
+
+                        override fun onResourceReady(
+                            resource: Bitmap?,
+                            model: Any?,
+                            target: com.bumptech.glide.request.target.Target<Bitmap>?,
+                            dataSource: DataSource?,
+                            isFirstResource: Boolean
+                        ): Boolean {
+
+                            val wallpaperManager = WallpaperManager.getInstance(holder.itemView.context)
+                            try {
+
+                                wallpaperManager.setBitmap(resource)
+                                dialog.dismiss()
+
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                            }
+
+                            return false
+                        }
+                    }).submit()
+            }
 
         }
     }
